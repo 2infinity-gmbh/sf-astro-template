@@ -3,6 +3,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  id-token: write # Required for Workload Identity Federation
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,9 +21,14 @@ jobs:
 
       - run: npm run build
 
+      # Authenticate via Workload Identity Federation (no secrets needed)
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/968306158285/locations/global/workloadIdentityPools/github-actions/providers/github
+          service_account: firebase-adminsdk-fbsvc@swarmfund.iam.gserviceaccount.com
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}
           channelId: live
           projectId: swarmfund
