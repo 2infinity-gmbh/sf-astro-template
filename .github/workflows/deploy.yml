@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - run: npm ci
 
@@ -27,8 +27,5 @@ jobs:
           workload_identity_provider: projects/968306158285/locations/global/workloadIdentityPools/github-actions/providers/github
           service_account: firebase-adminsdk-fbsvc@swarmfund.iam.gserviceaccount.com
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          channelId: live
-          projectId: swarmfund
+      # Deploy using firebase-tools CLI (respects GOOGLE_APPLICATION_CREDENTIALS from auth step)
+      - run: npx firebase-tools deploy --only hosting --project swarmfund
